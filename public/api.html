@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Weather App</title>
+        <link rel="stylesheet" type="text/css" href="api.css">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins&display=swap">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    </head>
+    <body>
+        <div class="container">
+            <div class="card">
+                <input type="text" id="cityInput" placeholder="Enter city name">
+                <button id="searchButton"><i class="fa fa-search"></i></button>
+                <h2><i class="fa fa-map-marker"></i> <span id="location"></span></h2>
+                <h6 id="weather"></h6>
+                <h4><span id="temp"></span><sup>o</sup>C</h4>
+                <img src="" id="icon">
+                <button onclick="window.location.reload()" class="refresh"><i class="fa fa-refresh"></i></button>
+            </div>
+        </div> 
+    </body>
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js" crossorigin="anonymous"></script>
+    <script type="text/javascript">
+        document.getElementById('searchButton').addEventListener('click', function() {
+            const city = document.getElementById('cityInput').value;
+            if (city) {
+                getWeather(city);
+            } else {
+                alert('Please enter a city name');
+            }
+        });
+
+        function getWeather(city) {
+            const apiKey = '10b8c6dee74a05ec4e139b1f8f2a1217';
+            const link = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}`;
+            
+            const request = new XMLHttpRequest();
+            request.open('GET', link, true);
+            
+            request.onload = function() {
+                if (request.status >= 200 && request.status < 400) {
+                    const obj = JSON.parse(this.response);
+                    console.log(obj);
+                    document.getElementById('weather').innerHTML = obj.weather[0].description;
+                    document.getElementById('location').innerHTML = obj.name;
+                    document.getElementById('temp').innerHTML = Math.round(obj.main.temp - 273.15);
+                    document.getElementById('icon').src = "https://openweathermap.org/img/w/" + obj.weather[0].icon + ".png";
+                } else {
+                    console.log("The city data is not available");
+                    alert("City not found. Please try again.");
+                }
+            };
+            
+            request.onerror = function() {
+                console.log("Request failed");
+                alert("Failed to fetch data. Please try again.");
+            };
+            
+            request.send();
+        }
+    </script>
+</html>
